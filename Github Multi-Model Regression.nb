@@ -1,0 +1,1011 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     38498,       1001]
+NotebookOptionsPosition[     38103,        986]
+NotebookOutlinePosition[     38538,       1003]
+CellTagsIndexPosition[     38495,       1000]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ClearAll", "[", "\"\<Global`*\>\"", "]"}], "\[IndentingNewLine]", 
+  "\n", 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{"--", 
+     RowBox[{"--", 
+      RowBox[{"--", 
+       RowBox[{"-", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Helpers", "--"}], "--"}], "--"}]}]}]}]}], "-"}], "*)"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"clean", "[", "input_", "]"}], ":=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"s", ",", "nums"}], "}"}], ",", 
+     RowBox[{
+      RowBox[{"s", "=", 
+       RowBox[{"StringReplace", "[", 
+        RowBox[{"input", ",", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"\"\<\\\"\>\"", "->", "\"\<\>\""}], ",", 
+           RowBox[{"\"\<\[OpenCurlyDoubleQuote]\>\"", "->", "\"\<\>\""}], ",", 
+           RowBox[{"\"\<\[CloseCurlyDoubleQuote]\>\"", "->", "\"\<\>\""}], ",", 
+           RowBox[{"\"\<'\>\"", "->", "\"\<\>\""}], ",", 
+           RowBox[{"\"\<&\>\"", "->", "\"\< \>\""}], ",", 
+           RowBox[{"\"\<\\n\>\"", "->", "\"\< \>\""}], ",", 
+           RowBox[{"\"\<\\t\>\"", "->", "\"\< \>\""}]}], "}"}]}], "]"}]}], ";",
+       "\[IndentingNewLine]", 
+      RowBox[{"nums", "=", 
+       RowBox[{"ToExpression", "@", 
+        RowBox[{"StringSplit", "[", 
+         RowBox[{"s", ",", 
+          RowBox[{"{", 
+           RowBox[{"\"\<,\>\"", ",", "\"\< \>\"", ",", "\"\<;\>\""}], "}"}]}],
+          "]"}]}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"Select", "[", 
+       RowBox[{"nums", ",", "NumericQ"}], "]"}]}]}], "]"}]}], 
+  "\[IndentingNewLine]"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"r2", "[", 
+    RowBox[{"actual_", ",", "pred_"}], "]"}], ":=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"ssRes", ",", "ssTot"}], "}"}], ",", 
+     RowBox[{
+      RowBox[{"ssRes", "=", 
+       RowBox[{"Total", "[", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"actual", "-", "pred"}], ")"}], "^", "2"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"ssTot", "=", 
+       RowBox[{"Total", "[", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"actual", "-", 
+           RowBox[{"Mean", "[", "actual", "]"}]}], ")"}], "^", "2"}], "]"}]}],
+       ";", "\[IndentingNewLine]", 
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{"ssTot", "==", "0"}], ",", "1", ",", 
+        RowBox[{"1", "-", 
+         RowBox[{"ssRes", "/", "ssTot"}]}]}], "]"}]}]}], "]"}]}], "\n", 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+    "Fit", " ", "a", " ", "general", " ", "model", " ", "with", " ", 
+     "FindFit"}], ",", 
+    RowBox[{"return", " ", "association", " ", "or", " ", "$Failed"}]}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"fitModel", "[", 
+     RowBox[{
+     "name_", ",", "form_", ",", "params_", ",", "x_", ",", "xs_", ",", "ys_",
+       ",", "xTrain_", ",", "yTrain_", ",", "xTest_", ",", "yTest_"}], "]"}], 
+    ":=", 
+    RowBox[{"Quiet", "@", 
+     RowBox[{"Check", "[", 
+      RowBox[{
+       RowBox[{"Module", "[", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{
+          "fit", ",", "expr", ",", "predAll", ",", "predTrain", ",", 
+           "predTest", ",", "r2All", ",", "r2Train", ",", "r2Test"}], "}"}], ",", 
+         RowBox[{
+          RowBox[{"fit", "=", 
+           RowBox[{"FindFit", "[", 
+            RowBox[{
+             RowBox[{"Transpose", "[", 
+              RowBox[{"{", 
+               RowBox[{"xTrain", ",", "yTrain"}], "}"}], "]"}], ",", "form", ",",
+              "params", ",", "x"}], "]"}]}], ";", "\[IndentingNewLine]", 
+          RowBox[{"expr", "=", 
+           RowBox[{"form", "/.", " ", "fit"}]}], ";", "\[IndentingNewLine]", 
+          RowBox[{"predAll", "=", 
+           RowBox[{"expr", "/.", " ", 
+            RowBox[{"x", "->", "xs"}]}]}], ";", "\[IndentingNewLine]", 
+          RowBox[{"r2All", "=", 
+           RowBox[{"r2", "[", 
+            RowBox[{"ys", ",", "predAll"}], "]"}]}], ";", 
+          "\[IndentingNewLine]", 
+          RowBox[{"predTrain", "=", 
+           RowBox[{"expr", "/.", " ", 
+            RowBox[{"x", "->", "xTrain"}]}]}], ";", "\[IndentingNewLine]", 
+          RowBox[{"r2Train", "=", 
+           RowBox[{"r2", "[", 
+            RowBox[{"yTrain", ",", "predTrain"}], "]"}]}], ";", 
+          "\[IndentingNewLine]", 
+          RowBox[{"r2Test", "=", 
+           RowBox[{"If", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"Length", "[", "xTest", "]"}], ">", "0"}], ",", 
+             RowBox[{
+              RowBox[{"predTest", "=", 
+               RowBox[{"expr", "/.", " ", 
+                RowBox[{"x", "->", "xTest"}]}]}], ";", "\[IndentingNewLine]", 
+              RowBox[{"r2", "[", 
+               RowBox[{"yTest", ",", "predTest"}], "]"}]}], ",", 
+             RowBox[{"Missing", "[", "\"\<NotAvailable\>\"", "]"}]}], "]"}]}],
+           ";", "\[IndentingNewLine]", 
+          RowBox[{"<|", 
+           RowBox[{
+            RowBox[{"\"\<Name\>\"", "->", "name"}], ",", 
+            RowBox[{"\"\<Expr\>\"", "->", "expr"}], ",", 
+            RowBox[{"\"\<R2All\>\"", "->", "r2All"}], ",", 
+            RowBox[{"\"\<R2Train\>\"", "->", "r2Train"}], ",", 
+            RowBox[{"\"\<R2Test\>\"", "->", "r2Test"}]}], "|>"}]}]}], "]"}], ",",
+        "$Failed"}], "]"}]}]}], ";"}], "\[IndentingNewLine]"}], "\n", 
+ RowBox[{"Manipulate", "[", 
+  RowBox[{
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "xs", ",", "ys", ",", "n", ",", "split", ",", "xTrain", ",", "yTrain", ",",
+        "xTest", ",", "yTest", ",", 
+       RowBox[{"(*", 
+        RowBox[{"polynomial", " ", "core"}], "*)"}], "allPolyFits", ",", 
+       "bestPolyIndex", ",", "bestPoly", ",", "bestDeg", ",", "bestPolyExpr", 
+       ",", "bestPolyR2", ",", "coeffs", ",", "coeffsDescending", ",", 
+       "polyTrainExpr", ",", "polyTrainR2", ",", "polyTestR2", ",", 
+       "polyExpr", ",", 
+       RowBox[{"(*", "plots", "*)"}], "plot", ",", 
+       RowBox[{"(*", "calculus", "*)"}], "d1", ",", "d2", ",", "critSol", ",",
+        "critXs", ",", "critPts", ",", "critGraphics", ",", "area", ",", 
+       RowBox[{"(*", 
+        RowBox[{"other", " ", "models"}], "*)"}], 
+       RowBox[{"models", "=", 
+        RowBox[{"{", "}"}]}], ",", "rowModels", ",", "modelTable", ",", 
+       "expFit", ",", "logFit", ",", "powFit", ",", "ratFit", ",", "logiFit", 
+       ",", 
+       RowBox[{"(*", "Fourier", "*)"}], 
+       RowBox[{"fourierOrder", "=", "4"}], ",", "baseFreq", ",", "basis", ",",
+        "fourierExpr", ",", "fourierR2", ",", 
+       RowBox[{"(*", 
+        RowBox[{"symbolic", " ", "regression"}], "*)"}], "symFormula", ",", 
+       "symR2", ",", "symDisplay", ",", 
+       RowBox[{"(*", "roots", "*)"}], "roots", ",", "rootVals", ",", 
+       "realRoots", ",", "complexRoots", ",", "rootPlot"}], "}"}], ",", 
+     RowBox[{
+      RowBox[{"xs", "=", 
+       RowBox[{"clean", "[", "xString", "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"ys", "=", 
+       RowBox[{"clean", "[", "yString", "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{
+          RowBox[{"Length", "[", "xs", "]"}], "!=", 
+          RowBox[{"Length", "[", "ys", "]"}]}], "||", 
+         RowBox[{
+          RowBox[{"Length", "[", "xs", "]"}], "<", "3"}]}], ",", 
+        RowBox[{"Return", "[", 
+         RowBox[{"Style", "[", 
+          
+          RowBox[{"\"\<Enter matching numeric lists with \[GreaterEqual] 3 \
+points.\>\"", ",", "14", ",", "Red"}], "]"}], "]"}]}], "]"}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"n", "=", 
+       RowBox[{"Length", "[", "xs", "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"split", "=", 
+       RowBox[{"Max", "[", 
+        RowBox[{"1", ",", 
+         RowBox[{"Floor", "[", 
+          RowBox[{"0.8", " ", "n"}], "]"}]}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"xTrain", "=", 
+       RowBox[{"xs", "[", 
+        RowBox[{"[", 
+         RowBox[{";;", "split"}], "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"yTrain", "=", 
+       RowBox[{"ys", "[", 
+        RowBox[{"[", 
+         RowBox[{";;", "split"}], "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"xTest", "=", 
+       RowBox[{"xs", "[", 
+        RowBox[{"[", 
+         RowBox[{
+          RowBox[{"split", "+", "1"}], ";;"}], "]"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"yTest", "=", 
+       RowBox[{"ys", "[", 
+        RowBox[{"[", 
+         RowBox[{
+          RowBox[{"split", "+", "1"}], ";;"}], "]"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"--", 
+          RowBox[{"--", 
+           RowBox[{"--", 
+            RowBox[{"--", 
+             RowBox[{"--", "1"}]}]}]}]}], "&"}], " ", 
+        RowBox[{"core", ":", 
+         RowBox[{
+          RowBox[{"Polynomial", " ", "auto"}], "-", 
+          RowBox[{"degree", " ", 
+           RowBox[{
+            RowBox[{
+             RowBox[{
+              RowBox[{
+               RowBox[{"fit", "--"}], "--"}], "--"}], "--"}], "--"}]}]}]}]}], 
+       "*)"}], 
+      RowBox[{"allPolyFits", "=", 
+       RowBox[{"Table", "[", 
+        RowBox[{
+         RowBox[{"Module", "[", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{"expr", ",", "pred", ",", "score"}], "}"}], ",", 
+           RowBox[{
+            RowBox[{"expr", "=", 
+             RowBox[{"Fit", "[", 
+              RowBox[{
+               RowBox[{"Transpose", "[", 
+                RowBox[{"{", 
+                 RowBox[{"xs", ",", "ys"}], "}"}], "]"}], ",", 
+               RowBox[{"Table", "[", 
+                RowBox[{
+                 RowBox[{"x", "^", "k"}], ",", 
+                 RowBox[{"{", 
+                  RowBox[{"k", ",", "0", ",", "d"}], "}"}]}], "]"}], ",", 
+               "x"}], "]"}]}], ";", "\[IndentingNewLine]", 
+            RowBox[{"pred", "=", 
+             RowBox[{"expr", "/.", " ", 
+              RowBox[{"x", "->", "xs"}]}]}], ";", "\[IndentingNewLine]", 
+            RowBox[{"score", "=", 
+             RowBox[{"r2", "[", 
+              RowBox[{"ys", ",", "pred"}], "]"}]}], ";", 
+            "\[IndentingNewLine]", 
+            RowBox[{"{", 
+             RowBox[{"d", ",", "expr", ",", "score"}], "}"}]}]}], "]"}], ",", 
+         RowBox[{"{", 
+          RowBox[{"d", ",", "1", ",", 
+           RowBox[{"n", "-", "1"}]}], "}"}]}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"bestPolyIndex", "=", 
+       RowBox[{"First", "@", 
+        RowBox[{"Ordering", "[", 
+         RowBox[{
+          RowBox[{"allPolyFits", "[", 
+           RowBox[{"[", 
+            RowBox[{"All", ",", "3"}], "]"}], "]"}], ",", 
+          RowBox[{"-", "1"}]}], "]"}]}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"bestPoly", "=", 
+       RowBox[{"allPolyFits", "[", 
+        RowBox[{"[", "bestPolyIndex", "]"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"bestDeg", "=", 
+       RowBox[{"bestPoly", "[", 
+        RowBox[{"[", "1", "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"bestPolyExpr", "=", 
+       RowBox[{"bestPoly", "[", 
+        RowBox[{"[", "2", "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"bestPolyR2", "=", 
+       RowBox[{"bestPoly", "[", 
+        RowBox[{"[", "3", "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"polyExpr", "=", 
+       RowBox[{"Expand", "[", "bestPolyExpr", "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"coeffs", "=", 
+       RowBox[{"CoefficientList", "[", 
+        RowBox[{"polyExpr", ",", "x"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"coeffsDescending", "=", 
+       RowBox[{"Reverse", "[", "coeffs", "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+        RowBox[{"--", 
+         RowBox[{"--", 
+          RowBox[{"--", 
+           RowBox[{"--", 
+            RowBox[{"--", "2"}]}]}]}]}], ":", 
+        RowBox[{
+         RowBox[{"polynomial", " ", 
+          RowBox[{"80", "/", "20"}], " ", "train"}], "-", 
+         RowBox[{"test", " ", 
+          RowBox[{
+           RowBox[{
+            RowBox[{
+             RowBox[{
+              RowBox[{"R\.b2", "--"}], "--"}], "--"}], "--"}], "--"}]}]}]}], 
+       "*)"}], 
+      RowBox[{"polyTrainExpr", "=", 
+       RowBox[{"Fit", "[", 
+        RowBox[{
+         RowBox[{"Transpose", "[", 
+          RowBox[{"{", 
+           RowBox[{"xTrain", ",", "yTrain"}], "}"}], "]"}], ",", 
+         RowBox[{"Table", "[", 
+          RowBox[{
+           RowBox[{"x", "^", "k"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"k", ",", "0", ",", "bestDeg"}], "}"}]}], "]"}], ",", 
+         "x"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"polyTrainR2", "=", 
+       RowBox[{"r2", "[", 
+        RowBox[{"yTrain", ",", 
+         RowBox[{"polyTrainExpr", "/.", " ", 
+          RowBox[{"x", "->", "xTrain"}]}]}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"polyTestR2", "=", 
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Length", "[", "xTest", "]"}], ">", "0"}], ",", 
+         RowBox[{"r2", "[", 
+          RowBox[{"yTest", ",", 
+           RowBox[{"polyTrainExpr", "/.", " ", 
+            RowBox[{"x", "->", "xTest"}]}]}], "]"}], ",", 
+         RowBox[{"Missing", "[", "\"\<NotAvailable\>\"", "]"}]}], "]"}]}], ";",
+       "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+        RowBox[{"--", 
+         RowBox[{"--", 
+          RowBox[{"--", 
+           RowBox[{"--", 
+            RowBox[{"--", "1"}]}]}]}]}], ":", 
+        RowBox[{"Other", " ", "models", " ", 
+         RowBox[{
+          RowBox[{
+           RowBox[{
+            RowBox[{
+             RowBox[{
+              RowBox[{"(", 
+               RowBox[{"multi", "-", 
+                RowBox[{"model", " ", "comparison"}]}], ")"}], "--"}], "--"}],
+             "--"}], "--"}], "--"}]}]}], "*)"}], 
+      RowBox[{"AppendTo", "[", 
+       RowBox[{"models", ",", 
+        RowBox[{"<|", 
+         RowBox[{
+          RowBox[{"\"\<Name\>\"", "->", 
+           RowBox[{"\"\<Polynomial (deg \>\"", "<>", 
+            RowBox[{"ToString", "[", "bestDeg", "]"}], "<>", "\"\<)\>\""}]}], 
+          ",", 
+          RowBox[{"\"\<Expr\>\"", "->", "bestPolyExpr"}], ",", 
+          RowBox[{"\"\<R2All\>\"", "->", "bestPolyR2"}], ",", 
+          RowBox[{"\"\<R2Train\>\"", "->", "polyTrainR2"}], ",", 
+          RowBox[{"\"\<R2Test\>\"", "->", "polyTestR2"}]}], "|>"}]}], "]"}], ";",
+       "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{"Exponential", " ", "a", " ", 
+        RowBox[{"Exp", "[", 
+         RowBox[{"b", " ", "x"}], "]"}]}], "*)"}], 
+      RowBox[{"expFit", "=", 
+       RowBox[{"fitModel", "[", 
+        RowBox[{"\"\<Exponential a e^(b x)\>\"", ",", 
+         RowBox[{"a", " ", 
+          RowBox[{"Exp", "[", 
+           RowBox[{"b", " ", "x"}], "]"}]}], ",", 
+         RowBox[{"{", 
+          RowBox[{"a", ",", "b"}], "}"}], ",", "x", ",", "xs", ",", "ys", ",",
+          "xTrain", ",", "yTrain", ",", "xTest", ",", "yTest"}], "]"}]}], ";",
+       "\[IndentingNewLine]", 
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{"expFit", "=!=", "$Failed"}], ",", 
+        RowBox[{"AppendTo", "[", 
+         RowBox[{"models", ",", "expFit"}], "]"}]}], "]"}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+        RowBox[{"Logarithmic", " ", "a", " ", 
+         RowBox[{"Log", "[", "x", "]"}]}], "+", 
+        RowBox[{"b", " ", 
+         RowBox[{"(", 
+          RowBox[{
+           RowBox[{"only", " ", "if", " ", "xs"}], ">", "0"}], ")"}]}]}], 
+       "*)"}], 
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"Min", "[", "xs", "]"}], ">", "0"}], ",", 
+        RowBox[{
+         RowBox[{"logFit", "=", 
+          RowBox[{"fitModel", "[", 
+           RowBox[{"\"\<Log a ln(x)+b\>\"", ",", 
+            RowBox[{
+             RowBox[{"a", " ", 
+              RowBox[{"Log", "[", "x", "]"}]}], "+", "b"}], ",", 
+            RowBox[{"{", 
+             RowBox[{"a", ",", "b"}], "}"}], ",", "x", ",", "xs", ",", "ys", ",",
+             "xTrain", ",", "yTrain", ",", "xTest", ",", "yTest"}], "]"}]}], ";",
+          "\[IndentingNewLine]", 
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{"logFit", "=!=", "$Failed"}], ",", 
+           RowBox[{"AppendTo", "[", 
+            RowBox[{"models", ",", "logFit"}], "]"}]}], "]"}], ";"}]}], "]"}],
+       ";", "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{"Power", " ", "a", " ", 
+        RowBox[{"x", "^", "b"}], " ", 
+        RowBox[{"(", 
+         RowBox[{"xs", ">", "0"}], ")"}]}], "*)"}], 
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"Min", "[", "xs", "]"}], ">", "0"}], ",", 
+        RowBox[{
+         RowBox[{"powFit", "=", 
+          RowBox[{"fitModel", "[", 
+           RowBox[{"\"\<Power a x^b\>\"", ",", 
+            RowBox[{"a", " ", 
+             RowBox[{"x", "^", "b"}]}], ",", 
+            RowBox[{"{", 
+             RowBox[{"a", ",", "b"}], "}"}], ",", "x", ",", "xs", ",", "ys", ",",
+             "xTrain", ",", "yTrain", ",", "xTest", ",", "yTest"}], "]"}]}], ";",
+          "\[IndentingNewLine]", 
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{"powFit", "=!=", "$Failed"}], ",", 
+           RowBox[{"AppendTo", "[", 
+            RowBox[{"models", ",", "powFit"}], "]"}]}], "]"}], ";"}]}], "]"}],
+       ";", "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{"Rational", " ", 
+        RowBox[{"(", 
+         RowBox[{"quadratic", "/", "linear"}], ")"}]}], "*)"}], 
+      RowBox[{"ratFit", "=", 
+       RowBox[{"fitModel", "[", 
+        RowBox[{"\"\<Rational (ax^2+bx+c)/(dx+e)\>\"", ",", 
+         RowBox[{
+          RowBox[{"(", 
+           RowBox[{
+            RowBox[{"a", " ", 
+             RowBox[{"x", "^", "2"}]}], "+", 
+            RowBox[{"b", " ", "x"}], "+", "c"}], ")"}], "/", 
+          RowBox[{"(", 
+           RowBox[{
+            RowBox[{"d", " ", "x"}], "+", "e"}], ")"}]}], ",", 
+         RowBox[{"{", 
+          RowBox[{"a", ",", "b", ",", "c", ",", "d", ",", "e"}], "}"}], ",", 
+         "x", ",", "xs", ",", "ys", ",", "xTrain", ",", "yTrain", ",", 
+         "xTest", ",", "yTest"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{"ratFit", "=!=", "$Failed"}], ",", 
+        RowBox[{"AppendTo", "[", 
+         RowBox[{"models", ",", "ratFit"}], "]"}]}], "]"}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{"Logistic", " ", 
+        RowBox[{"L", "/", 
+         RowBox[{"(", 
+          RowBox[{"1", "+", 
+           RowBox[{"Exp", "[", 
+            RowBox[{
+             RowBox[{"-", "k"}], 
+             RowBox[{"(", 
+              RowBox[{"x", "-", "x0"}], ")"}]}], "]"}]}], ")"}]}]}], "*)"}], 
+      RowBox[{"logiFit", "=", 
+       RowBox[{"fitModel", "[", 
+        RowBox[{"\"\<Logistic\>\"", ",", 
+         RowBox[{"L", "/", 
+          RowBox[{"(", 
+           RowBox[{"1", "+", 
+            RowBox[{"Exp", "[", 
+             RowBox[{
+              RowBox[{"-", "k"}], " ", 
+              RowBox[{"(", 
+               RowBox[{"x", "-", "x0"}], ")"}]}], "]"}]}], ")"}]}], ",", 
+         RowBox[{"{", 
+          RowBox[{"L", ",", "k", ",", "x0"}], "}"}], ",", "x", ",", "xs", ",",
+          "ys", ",", "xTrain", ",", "yTrain", ",", "xTest", ",", "yTest"}], 
+        "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{"logiFit", "=!=", "$Failed"}], ",", 
+        RowBox[{"AppendTo", "[", 
+         RowBox[{"models", ",", "logiFit"}], "]"}]}], "]"}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+       "Fourier", " ", "series", " ", "model", " ", "of", " ", "order", " ", 
+        "4"}], "*)"}], 
+      RowBox[{"baseFreq", "=", 
+       RowBox[{"Pi", "/", 
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"Max", "[", "xs", "]"}], "-", 
+          RowBox[{"Min", "[", "xs", "]"}]}], ")"}]}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"basis", "=", 
+       RowBox[{"Join", "[", 
+        RowBox[{
+         RowBox[{"{", "1", "}"}], ",", 
+         RowBox[{"Table", "[", 
+          RowBox[{
+           RowBox[{"Cos", "[", 
+            RowBox[{"k", " ", "baseFreq", " ", "x"}], "]"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"k", ",", "1", ",", "fourierOrder"}], "}"}]}], "]"}], ",", 
+         RowBox[{"Table", "[", 
+          RowBox[{
+           RowBox[{"Sin", "[", 
+            RowBox[{"k", " ", "baseFreq", " ", "x"}], "]"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"k", ",", "1", ",", "fourierOrder"}], "}"}]}], "]"}]}], 
+        "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"fourierExpr", "=", 
+       RowBox[{"Quiet", "@", 
+        RowBox[{"Check", "[", 
+         RowBox[{
+          RowBox[{"Fit", "[", 
+           RowBox[{
+            RowBox[{"Transpose", "[", 
+             RowBox[{"{", 
+              RowBox[{"xs", ",", "ys"}], "}"}], "]"}], ",", "basis", ",", 
+            "x"}], "]"}], ",", "$Failed"}], "]"}]}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{"fourierExpr", "=!=", "$Failed"}], ",", 
+        RowBox[{
+         RowBox[{"fourierR2", "=", 
+          RowBox[{"r2", "[", 
+           RowBox[{"ys", ",", 
+            RowBox[{"fourierExpr", "/.", " ", 
+             RowBox[{"x", "->", "xs"}]}]}], "]"}]}], ";", 
+         "\[IndentingNewLine]", 
+         RowBox[{"AppendTo", "[", 
+          RowBox[{"models", ",", 
+           RowBox[{"<|", 
+            RowBox[{
+             RowBox[{"\"\<Name\>\"", "->", "\"\<Fourier (order 4)\>\""}], ",", 
+             RowBox[{"\"\<Expr\>\"", "->", "fourierExpr"}], ",", 
+             RowBox[{"\"\<R2All\>\"", "->", "fourierR2"}], ",", 
+             RowBox[{"\"\<R2Train\>\"", "->", 
+              RowBox[{"Missing", "[", "\"\<NotAvailable\>\"", "]"}]}], ",", 
+             RowBox[{"\"\<R2Test\>\"", "->", 
+              RowBox[{"Missing", "[", "\"\<NotAvailable\>\"", "]"}]}]}], 
+            "|>"}]}], "]"}], ";"}]}], "]"}], ";", "\[IndentingNewLine]", 
+      RowBox[{"rowModels", "=", 
+       RowBox[{"models", "/.", " ", 
+        RowBox[{"a_Association", ":>", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"a", "[", "\"\<Name\>\"", "]"}], ",", 
+           RowBox[{"NumberForm", "[", 
+            RowBox[{
+             RowBox[{"a", "[", "\"\<R2All\>\"", "]"}], ",", 
+             RowBox[{"{", 
+              RowBox[{"4", ",", "3"}], "}"}]}], "]"}], ",", 
+           RowBox[{"If", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"a", "[", "\"\<R2Train\>\"", "]"}], "===", 
+              RowBox[{"Missing", "[", "\"\<NotAvailable\>\"", "]"}]}], 
+             ",", "\"\<-\>\"", ",", 
+             RowBox[{"NumberForm", "[", 
+              RowBox[{
+               RowBox[{"a", "[", "\"\<R2Train\>\"", "]"}], ",", 
+               RowBox[{"{", 
+                RowBox[{"4", ",", "3"}], "}"}]}], "]"}]}], "]"}], ",", 
+           RowBox[{"If", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"a", "[", "\"\<R2Test\>\"", "]"}], "===", 
+              RowBox[{"Missing", "[", "\"\<NotAvailable\>\"", "]"}]}], 
+             ",", "\"\<-\>\"", ",", 
+             RowBox[{"NumberForm", "[", 
+              RowBox[{
+               RowBox[{"a", "[", "\"\<R2Test\>\"", "]"}], ",", 
+               RowBox[{"{", 
+                RowBox[{"4", ",", "3"}], "}"}]}], "]"}]}], "]"}]}], 
+          "}"}]}]}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"modelTable", "=", 
+       RowBox[{"Grid", "[", 
+        RowBox[{
+         RowBox[{"Prepend", "[", 
+          RowBox[{"rowModels", ",", 
+           RowBox[{"{", 
+            
+            RowBox[{"\"\<Model\>\"", ",", "\"\<R\.b2 (all)\>\"", 
+             ",", "\"\<R\.b2 (train 80%)\>\"", 
+             ",", "\"\<R\.b2 (test 20%)\>\""}], "}"}]}], "]"}], ",", 
+         RowBox[{"Frame", "->", "All"}], ",", 
+         RowBox[{"ItemStyle", "->", 
+          RowBox[{"Directive", "[", "Small", "]"}]}]}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+        RowBox[{"--", 
+         RowBox[{"--", 
+          RowBox[{"--", 
+           RowBox[{"--", 
+            RowBox[{"--", "5"}]}]}]}]}], "\[Dash]", "6", "\[Dash]", 
+        RowBox[{"7", ":", 
+         RowBox[{"Calculus", " ", "on", " ", 
+          RowBox[{
+           RowBox[{
+            RowBox[{
+             RowBox[{
+              RowBox[{"polynomial", "--"}], "--"}], "--"}], "--"}], 
+           "--"}]}]}]}], "*)"}], 
+      RowBox[{"d1", "=", 
+       RowBox[{"D", "[", 
+        RowBox[{"polyExpr", ",", "x"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"d2", "=", 
+       RowBox[{"D", "[", 
+        RowBox[{"polyExpr", ",", 
+         RowBox[{"{", 
+          RowBox[{"x", ",", "2"}], "}"}]}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"critSol", "=", 
+       RowBox[{"Quiet", "@", 
+        RowBox[{"NSolve", "[", 
+         RowBox[{
+          RowBox[{"d1", "==", "0"}], ",", "x"}], "]"}]}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"critXs", "=", 
+       RowBox[{"Select", "[", 
+        RowBox[{
+         RowBox[{"Chop", "[", 
+          RowBox[{"Re", "[", 
+           RowBox[{"x", "/.", " ", "critSol"}], "]"}], "]"}], ",", 
+         "NumericQ"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"critPts", "=", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"#", ",", 
+           RowBox[{"polyExpr", "/.", " ", 
+            RowBox[{"x", "->", "#"}]}]}], "}"}], "&"}], "/@", "critXs"}]}], ";",
+       "\[IndentingNewLine]", 
+      RowBox[{"critGraphics", "=", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"PointSize", "[", "0.015", "]"}], ",", 
+         RowBox[{"{", 
+          RowBox[{"Green", ",", 
+           RowBox[{"Point", "/@", "critPts"}]}], "}"}]}], "}"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"area", "=", 
+       RowBox[{"Quiet", "@", 
+        RowBox[{"Check", "[", 
+         RowBox[{
+          RowBox[{"NIntegrate", "[", 
+           RowBox[{"polyExpr", ",", 
+            RowBox[{"{", 
+             RowBox[{"x", ",", 
+              RowBox[{"Min", "[", "xs", "]"}], ",", 
+              RowBox[{"Max", "[", "xs", "]"}]}], "}"}]}], "]"}], ",", 
+          "$Failed"}], "]"}]}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+        RowBox[{"--", 
+         RowBox[{"--", 
+          RowBox[{"--", 
+           RowBox[{"--", 
+            RowBox[{"--", "22"}]}]}]}]}], ":", 
+        RowBox[{"Roots", " ", "of", " ", 
+         RowBox[{
+          RowBox[{
+           RowBox[{
+            RowBox[{
+             RowBox[{"polynomial", "--"}], "--"}], "--"}], "--"}], "--"}]}]}],
+        "*)"}], 
+      RowBox[{"roots", "=", 
+       RowBox[{"Quiet", "@", 
+        RowBox[{"NSolve", "[", 
+         RowBox[{
+          RowBox[{"polyExpr", "==", "0"}], ",", "x"}], "]"}]}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"rootVals", "=", 
+       RowBox[{"x", "/.", " ", "roots"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"realRoots", "=", 
+       RowBox[{"Select", "[", 
+        RowBox[{"rootVals", ",", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"Im", "[", "#", "]"}], "==", "0"}], "&"}]}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"complexRoots", "=", 
+       RowBox[{"Select", "[", 
+        RowBox[{"rootVals", ",", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"Im", "[", "#", "]"}], "!=", "0"}], "&"}]}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"rootPlot", "=", 
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{"rootVals", "===", 
+          RowBox[{"{", "}"}]}], ",", "\"\<No roots\>\"", ",", 
+         RowBox[{"ListPlot", "[", 
+          RowBox[{
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"{", 
+               RowBox[{
+                RowBox[{"Re", "[", "#", "]"}], ",", 
+                RowBox[{"Im", "[", "#", "]"}]}], "}"}], "&"}], "/@", 
+             "rootVals"}], ")"}], ",", 
+           RowBox[{"PlotStyle", "->", 
+            RowBox[{"PointSize", "[", "0.030", "]"}]}], ",", 
+           RowBox[{"AxesLabel", "->", 
+            RowBox[{"{", 
+             RowBox[{"\"\<Re\>\"", ",", "\"\<Im\>\""}], "}"}]}], ",", 
+           RowBox[{"PlotLabel", "->", "\"\<Roots in Complex Plane\>\""}], ",", 
+           RowBox[{"ImageSize", "->", "250"}]}], "]"}]}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+        RowBox[{"--", 
+         RowBox[{"--", 
+          RowBox[{"--", 
+           RowBox[{"--", 
+            RowBox[{"--", "23"}]}]}]}]}], ":", 
+        RowBox[{
+         RowBox[{"(", "extra", ")"}], " ", "Fourier", " ", "expression", " ", 
+         RowBox[{
+          RowBox[{
+           RowBox[{
+            RowBox[{
+             RowBox[{"text", "--"}], "--"}], "--"}], "--"}], "--"}]}]}], 
+       "*)"}], 
+      RowBox[{"(*", 
+       RowBox[{
+        RowBox[{"--", 
+         RowBox[{"--", 
+          RowBox[{"--", 
+           RowBox[{"--", 
+            RowBox[{"--", "15"}]}]}]}]}], ":", 
+        RowBox[{"Symbolic", " ", "regression", " ", "via", " ", 
+         RowBox[{
+          RowBox[{
+           RowBox[{
+            RowBox[{
+             RowBox[{"FindFormula", "--"}], "--"}], "--"}], "--"}], 
+          "--"}]}]}], "*)"}], 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"symFormula", ",", "symR2", ",", "symDisplay"}], "}"}], "=", 
+       RowBox[{"Quiet", "@", 
+        RowBox[{"Check", "[", 
+         RowBox[{
+          RowBox[{"Module", "[", 
+           RowBox[{
+            RowBox[{"{", 
+             RowBox[{"f", ",", "preds", ",", "r"}], "}"}], ",", 
+            RowBox[{
+             RowBox[{"f", "=", 
+              RowBox[{"FindFormula", "[", 
+               RowBox[{
+                RowBox[{"Transpose", "[", 
+                 RowBox[{"{", 
+                  RowBox[{"xs", ",", "ys"}], "}"}], "]"}], ",", "x"}], 
+               "]"}]}], ";", "\[IndentingNewLine]", 
+             RowBox[{"preds", "=", 
+              RowBox[{"f", "/.", " ", 
+               RowBox[{"x", "->", "xs"}]}]}], ";", "\[IndentingNewLine]", 
+             RowBox[{"r", "=", 
+              RowBox[{"r2", "[", 
+               RowBox[{"ys", ",", "preds"}], "]"}]}], ";", 
+             "\[IndentingNewLine]", 
+             RowBox[{"{", 
+              RowBox[{"f", ",", "r", ",", 
+               RowBox[{"f", "//", "TraditionalForm"}]}], "}"}]}]}], "]"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"$Failed", ",", 
+            RowBox[{"Missing", "[", "\"\<NotAvailable\>\"", "]"}], 
+            ",", "\"\<Not found\>\""}], "}"}]}], "]"}]}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+        RowBox[{"--", 
+         RowBox[{"--", 
+          RowBox[{"--", 
+           RowBox[{"--", 
+            RowBox[{"--", "main"}]}]}]}]}], " ", "plot", " ", "with", " ", 
+        "axes", " ", "crossing", " ", "at", " ", "origin", " ", "and", " ", 
+        "extremum", " ", 
+        RowBox[{
+         RowBox[{
+          RowBox[{
+           RowBox[{
+            RowBox[{"markers", "--"}], "--"}], "--"}], "--"}], "--"}]}], 
+       "*)"}], 
+      RowBox[{"plot", "=", 
+       RowBox[{"Show", "[", 
+        RowBox[{
+         RowBox[{"ListPlot", "[", 
+          RowBox[{
+           RowBox[{"Transpose", "[", 
+            RowBox[{"{", 
+             RowBox[{"xs", ",", "ys"}], "}"}], "]"}], ",", 
+           RowBox[{"PlotStyle", "->", "Red"}], ",", 
+           RowBox[{"PlotMarkers", "->", "Automatic"}], ",", 
+           RowBox[{"ImageSize", "->", "650"}]}], "]"}], ",", 
+         RowBox[{"Plot", "[", 
+          RowBox[{"bestPolyExpr", ",", 
+           RowBox[{"{", 
+            RowBox[{"x", ",", 
+             RowBox[{
+              RowBox[{"Min", "[", "xs", "]"}], "-", "1"}], ",", 
+             RowBox[{
+              RowBox[{"Max", "[", "xs", "]"}], "+", "1"}]}], "}"}], ",", 
+           RowBox[{"PlotStyle", "->", "Blue"}], ",", 
+           RowBox[{"PlotRange", "->", "Full"}]}], "]"}], ",", 
+         RowBox[{"Epilog", "->", "critGraphics"}], ",", 
+         RowBox[{"PlotRange", "->", "Full"}], ",", 
+         RowBox[{"PlotRangePadding", "->", 
+          RowBox[{"Scaled", "[", "0.1", "]"}]}], ",", 
+         RowBox[{"AxesOrigin", "->", 
+          RowBox[{"{", 
+           RowBox[{"0", ",", "0"}], "}"}]}], ",", 
+         RowBox[{"Ticks", "->", 
+          RowBox[{"{", 
+           RowBox[{"Automatic", ",", "Automatic"}], "}"}]}], ",", 
+         RowBox[{"PlotLabel", "->", 
+          RowBox[{"Style", "[", 
+           
+           RowBox[{"\"\<Data Points + Best Polynomial Fit\>\"", ",", "18", ",",
+             "Bold"}], "]"}]}], ",", 
+         RowBox[{"ImageSize", "->", "650"}]}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Column", "[", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"Style", "[", 
+          
+          RowBox[{"\"\<Best Polynomial Fit (core)\>\"", ",", "Bold", ",", 
+           "18"}], "]"}], ",", 
+         RowBox[{"\"\<Best degree: \>\"", "<>", 
+          RowBox[{"ToString", "[", "bestDeg", "]"}]}], ",", 
+         RowBox[{"\"\<R\.b2 (all data): \>\"", "<>", 
+          RowBox[{"ToString", "[", 
+           RowBox[{"NumberForm", "[", 
+            RowBox[{"bestPolyR2", ",", 
+             RowBox[{"{", 
+              RowBox[{"5", ",", "4"}], "}"}]}], "]"}], "]"}]}], ",", 
+         RowBox[{"\"\<R\.b2 train 80%: \>\"", "<>", 
+          RowBox[{"ToString", "[", 
+           RowBox[{"NumberForm", "[", 
+            RowBox[{"polyTrainR2", ",", 
+             RowBox[{"{", 
+              RowBox[{"5", ",", "4"}], "}"}]}], "]"}], "]"}]}], ",", 
+         RowBox[{"\"\<R\.b2 test 20%: \>\"", "<>", 
+          RowBox[{"If", "[", 
+           RowBox[{
+            RowBox[{"polyTestR2", "===", 
+             RowBox[{"Missing", "[", "\"\<NotAvailable\>\"", "]"}]}], 
+            ",", "\"\<N/A\>\"", ",", 
+            RowBox[{"ToString", "[", 
+             RowBox[{"NumberForm", "[", 
+              RowBox[{"polyTestR2", ",", 
+               RowBox[{"{", 
+                RowBox[{"5", ",", "4"}], "}"}]}], "]"}], "]"}]}], "]"}]}], ",", 
+         RowBox[{"Style", "[", 
+          
+          RowBox[{"\"\<Coefficients (highest \[RightArrow] constant):\>\"", ",",
+            "Bold", ",", "14"}], "]"}], ",", 
+         RowBox[{"coeffsDescending", "//", 
+          RowBox[{
+           RowBox[{"NumberForm", "[", 
+            RowBox[{"#", ",", "6"}], "]"}], "&"}]}], ",", 
+         RowBox[{"Style", "[", 
+          RowBox[{"\"\<Polynomial:\>\"", ",", "Bold", ",", "14"}], "]"}], ",", 
+         RowBox[{"polyExpr", "//", "TraditionalForm"}], ",", 
+         RowBox[{"Style", "[", 
+          RowBox[{"\"\<Derivative f'(x):\>\"", ",", "Bold", ",", "14"}], 
+          "]"}], ",", 
+         RowBox[{"d1", "//", "TraditionalForm"}], ",", 
+         RowBox[{"Style", "[", 
+          
+          RowBox[{"\"\<Integral of f(x) from min(x) to max(x):\>\"", ",", 
+           "Bold", ",", "14"}], "]"}], ",", 
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{"area", "===", "$Failed"}], ",", "\"\<N/A\>\"", ",", 
+           RowBox[{"NumberForm", "[", 
+            RowBox[{"area", ",", 
+             RowBox[{"{", 
+              RowBox[{"8", ",", "5"}], "}"}]}], "]"}]}], "]"}], ",", "plot", ",", 
+         RowBox[{"Spacer", "[", "10", "]"}], ",", 
+         RowBox[{"Style", "[", 
+          
+          RowBox[{"\"\<Model Comparison (1 & 2)\>\"", ",", "Bold", ",", 
+           "16"}], "]"}], ",", "modelTable", ",", 
+         RowBox[{"Spacer", "[", "10", "]"}], ",", 
+         RowBox[{"Style", "[", 
+          RowBox[{"\"\<Polynomial Roots (22)\>\"", ",", "Bold", ",", "16"}], 
+          "]"}], ",", 
+         RowBox[{"\"\<Real roots: \>\"", "<>", 
+          RowBox[{"ToString", "[", 
+           RowBox[{"NumberForm", "[", 
+            RowBox[{"realRoots", ",", 
+             RowBox[{"{", 
+              RowBox[{"6", ",", "4"}], "}"}]}], "]"}], "]"}]}], ",", 
+         RowBox[{"\"\<Complex roots: \>\"", "<>", 
+          RowBox[{"ToString", "[", 
+           RowBox[{"NumberForm", "[", 
+            RowBox[{"complexRoots", ",", 
+             RowBox[{"{", 
+              RowBox[{"6", ",", "4"}], "}"}]}], "]"}], "]"}]}], ",", 
+         "rootPlot", ",", 
+         RowBox[{"Spacer", "[", "10", "]"}], ",", 
+         RowBox[{"Style", "[", 
+          
+          RowBox[{"\"\<Symbolic Regression (FindFormula, 15)\>\"", ",", 
+           "Bold", ",", "16"}], "]"}], ",", 
+         RowBox[{"\"\<Formula: \>\"", "<>", 
+          RowBox[{"ToString", "[", "symDisplay", "]"}]}], ",", 
+         RowBox[{"\"\<R\.b2 (symbolic): \>\"", "<>", 
+          RowBox[{"If", "[", 
+           RowBox[{
+            RowBox[{"symR2", "===", 
+             RowBox[{"Missing", "[", "\"\<NotAvailable\>\"", "]"}]}], 
+            ",", "\"\<N/A\>\"", ",", 
+            RowBox[{"ToString", "[", 
+             RowBox[{"NumberForm", "[", 
+              RowBox[{"symR2", ",", 
+               RowBox[{"{", 
+                RowBox[{"5", ",", "4"}], "}"}]}], "]"}], "]"}]}], "]"}]}]}], 
+        "}"}], "]"}]}]}], "]"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"xString", ",", "\"\<1, 2, 7\>\""}], "}"}], ",", "InputField", ",", 
+     RowBox[{"Label", "->", "\"\<X values\>\""}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"yString", ",", "\"\<2, 5, 3\>\""}], "}"}], ",", "InputField", ",", 
+     RowBox[{"Label", "->", "\"\<Y values\>\""}]}], "}"}]}], "]"}]}], "Input",\
+ExpressionUUID->"b63f7835-96e2-d14f-8223-443d50233c07"]
+},
+WindowSize->{1152, 585.6},
+WindowMargins->{{
+  Automatic, -5.399999999999864}, {-5.399999999999977, Automatic}},
+FrontEndVersion->"14.3 for Microsoft Windows (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"f019cff3-0479-6444-a2e3-be827ce6b990"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 37545, 964, 2159, "Input",ExpressionUUID->"b63f7835-96e2-d14f-8223-443d50233c07"]
+}
+]
+*)
+
+(* End of internal cache information *)
+
